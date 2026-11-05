@@ -1,4 +1,176 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+
+class Nature {
+  final String nama;
+  final String deskripsi;
+  final String gambar;
+
+
+  new(this.nama, this.deskripsi, this.gambar);
+
+  get galeri => null;
+  
+}
+
+
+
+class FavoriteProvider extends ChangeNotifier {
+  final Set<String> _favorites = {};
+
+  int get count => _favorites.length;
+
+  bool isFavorite(String nama) => _favorites.contains(nama);
+
+  void toggle(String nama) {
+    if(_favorites.contains(nama)) {
+      _favorites.remove(nama);
+    } else{
+      _favorites.add(nama);
+    }
+    notifyListeners();
+  }
+}
+
+
+class DetailScreen extends StatelessWidget {
+  final Nature nature;
+
+  
+  const DetailScreen({
+    super.key,
+    required this.nature,
+});
+
+  get appBar => null;
+
+  @override
+  Widget build (BuildContext context, bool isFavorite) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(nature.nama),
+        centerTitle: true,
+      ),
+
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.network(
+                      nature.gambar,
+                      width: double.infinity,
+                      height: 250,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+
+                  Positioned(
+                    bottom: 12,
+                    right: 12,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.4),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: Icon(
+                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                          color: isFavorite ? Colors.red : Colors.white,
+                        ), onPressed: () {
+                          context.read<FavoriteProvider>().toggle(nature.nama);
+                      },
+                      ),
+                    ),
+                  )
+                ],
+              ),
+
+              const SizedBox(height: 16),
+
+              Text(
+                nature.nama,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+
+              // 5AA Peaceful Nature
+              const SizedBox(height: 8),
+
+              Text(
+                'Deskripsi',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 6),
+
+              Text(
+                nature.deskripsi,
+                style: const TextStyle(fontSize: 16),
+              ),
+
+              const SizedBox(height: 20),
+
+              const Text(
+                'Galeri Foto',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              SizedBox(
+                height: 120,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: nature.galeri.length,
+
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 10),
+
+                      child: Image.network(
+                        nature.galeri,
+                        width: 150,
+                        height: 120,
+                        fit: BoxFit.cover,
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+
+
+              ),
+            ],
+          ),
+        )
+      ),
+    );
+  }
+}
+
+extension on BuildContext {
+  read() {}
+}
+
+
+
 
 void main() {
   runApp(const MyApp());
@@ -11,7 +183,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: 'Nature Explore',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -28,9 +201,9 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: .fromSeed(seedColor: Colors.green),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Nature Explorer'),
     );
   }
 }
